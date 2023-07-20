@@ -1,0 +1,32 @@
+name: Sync Environment Repository
+
+on:
+  workflow_call:
+    inputs:
+      reponame:
+        description: 'Name of the repository where a base configuration will be made.'
+        type: string
+        required: false
+        default: ${{ github.event.repository.name }}
+    secrets:
+      API_TOKEN_GITHUB:
+        required: true
+
+jobs:
+  sync-env:
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        config:
+          - name: DEV
+            environment: development
+          - name: QA
+            environment: staging
+          - name: PROD
+            environment: production
+
+    environment: ${{ matrix.config.environment }}
+    steps:
+      - name: Create ${{ matrix.config.name }} environment
+        run: echo "Creating ${{ matrix.config.name }} environment!"
